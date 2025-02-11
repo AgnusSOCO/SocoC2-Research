@@ -25,6 +25,10 @@ public class HttpHandler : Handler
     public bool Secure { get; set; }
     public byte[] PfxCertificate { get; set; }
     public string PfxPassword { get; set; }
+    
+    // Domain fronting configuration
+    public DomainFrontingConfig DomainFronting { get; set; }
+    public Dictionary<string, string> CustomHeaders { get; set; } = new();
 
     public override HandlerType HandlerType
         => HandlerType.HTTP;

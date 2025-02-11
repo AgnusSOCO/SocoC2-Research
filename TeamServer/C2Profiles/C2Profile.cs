@@ -6,6 +6,18 @@ public sealed class C2Profile
 {
     public string Name { get; set; } = "default";
     public HttpProfile Http { get; set; } = new();
+    
+    // Traffic chunking configuration
+    public ChunkingProfile Chunking { get; set; } = new();
+    
+    public sealed class ChunkingProfile
+    {
+        public bool Enabled { get; set; } = false;
+        public int MinChunkSize { get; set; } = 512;
+        public int MaxChunkSize { get; set; } = 4096;
+        public int MinDelay { get; set; } = 10;
+        public int MaxDelay { get; set; } = 100;
+    }
 
     public sealed class HttpProfile
     {

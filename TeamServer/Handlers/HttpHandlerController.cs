@@ -20,6 +20,20 @@ public class HttpHandlerController : ControllerBase
 
     public async Task<IActionResult> RouteDrone()
     {
+        // Apply custom headers if configured
+        if (HttpContext.Items.TryGetValue("Handler", out var handlerObj) && 
+            handlerObj is HttpHandler handler && 
+            handler.CustomHeaders?.Count > 0)
+        {
+            foreach (var header in handler.CustomHeaders)
+            {
+                if (!HttpContext.Response.Headers.ContainsKey(header.Key))
+                {
+                    HttpContext.Response.Headers.Add(header.Key, header.Value);
+                }
+            }
+        }
+
         if (HttpContext.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
         {
             // recover metadata from header
