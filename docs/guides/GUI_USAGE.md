@@ -1,5 +1,97 @@
 # SharpC2 GUI Usage Guide
 
+## Windows Setup
+
+### Prerequisites
+1. Install Required Software:
+   - .NET 6.0 SDK: Download from Microsoft's website
+   - Visual Studio 2022 (optional): For development
+   - Git for Windows: For source control
+
+### Installation
+1. Clone Repository:
+   ```powershell
+   git clone https://github.com/AgnusSOCO/SocoC2-Research.git
+   cd SocoC2-Research
+   ```
+
+2. Build Client:
+   ```powershell
+   cd Client
+   dotnet restore
+   dotnet build
+   dotnet publish -c Release -r win-x64 --self-contained true
+   ```
+
+3. Build Drone (if needed):
+   ```powershell
+   cd ..\Drone
+   dotnet restore
+   dotnet build
+   dotnet publish -c Release -r win-x64 --self-contained true
+   ```
+
+### Windows-Specific Configuration
+1. Firewall Settings:
+   ```powershell
+   # Allow Client through firewall
+   New-NetFirewallRule -DisplayName "SharpC2 Client" -Direction Inbound -Program "C:\path\to\Client.exe" -Action Allow
+   
+   # Allow specific ports (example for HTTP handler)
+   New-NetFirewallRule -DisplayName "SharpC2 Handler" -Direction Inbound -LocalPort 443 -Protocol TCP -Action Allow
+   ```
+
+2. Antivirus Configuration:
+   ```powershell
+   # Add exclusion for client directory
+   Add-MpPreference -ExclusionPath "C:\path\to\SharpC2"
+   
+   # Add process exclusion
+   Add-MpPreference -ExclusionProcess "Client.exe"
+   ```
+
+3. Network Setup:
+   - Import SSL certificate:
+   ```powershell
+   Import-PfxCertificate -FilePath "cert.pfx" -CertStoreLocation "Cert:\LocalMachine\My" -Password $securePassword
+   ```
+   
+   - Configure hosts file for domain fronting:
+   ```powershell
+   Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "`n127.0.0.1 your.domain.com"
+   ```
+
+### Running on Windows
+1. Start Client:
+   ```powershell
+   cd C:\path\to\Client\bin\Release\net6.0-windows\win-x64\publish
+   .\Client.exe
+   ```
+
+2. Handler Management:
+   - Use Windows Task Manager to monitor connections
+   - Check Windows Event Viewer for issues
+   - Use netstat to verify listening ports:
+   ```powershell
+   netstat -ano | findstr "LISTENING"
+   ```
+
+3. Troubleshooting Windows Issues:
+   - Check Windows Event Logs:
+   ```powershell
+   Get-EventLog -LogName Application -Source "SharpC2*"
+   ```
+   
+   - Verify network connectivity:
+   ```powershell
+   Test-NetConnection -ComputerName your.domain.com -Port 443
+   ```
+   
+   - Check certificate:
+   ```powershell
+   Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object {$_.Subject -like "*SharpC2*"}
+   ```
+
 ## Getting Started
 
 ### Initial Connection
